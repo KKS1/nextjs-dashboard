@@ -64,9 +64,18 @@ export async function createInvoice(prevState: State, formData: FormData) {
   redirect('/dashboard/invoices');
 }
 
-export async function updateInvoice(id: string, formData: FormData) {
+export async function updateInvoice(id: string, prevState: State, formData: FormData) {
   const obj = Object.fromEntries(formData.entries().filter(([_, value]) => !!value));
-  let {customerId, amount, status} = InvoiceSchema.parse(obj);
+  const validatedFields = InvoiceSchema.safeParse(obj);
+
+  if(!validatedFields.success) {
+    return {
+      message: 'Missing Fields. Failed to Edit the Invoice.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  let {customerId, amount, status} = validatedFields.data
   amount *= 100; // convert to cents
   const date = new Date().toISOString().split('T')[0];
 
