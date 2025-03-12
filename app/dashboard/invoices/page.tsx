@@ -6,6 +6,7 @@ import { lusitana } from '@/app/ui/fonts';
 import { InvoicesTableSkeleton } from '@/app/ui/skeletons';
 import { Suspense } from 'react';
 import { PageProps } from '@/.next/types/app/page';
+import { fetchInvoicesPages } from '@/app/lib/data';
 
 interface IPageProps extends PageProps {
   searchParams?: Promise<{
@@ -18,7 +19,8 @@ export default async function Page(props: IPageProps) {
   const params = await props.searchParams;
   const query = params?.query || '';
   const currentPage = Number(params?.page) || 1;
-  // const totalPages = 10;
+  const totalPages = await fetchInvoicesPages(query);
+
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -32,7 +34,7 @@ export default async function Page(props: IPageProps) {
         <Table query={query} currentPage={currentPage} />
       </Suspense>
       <div className="mt-5 flex w-full justify-center">
-        {/* <Pagination totalPages={totalPages} /> */}
+        <Pagination totalPages={totalPages} />
       </div>
     </div>
   );
