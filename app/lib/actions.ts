@@ -3,22 +3,51 @@ import {z} from 'zod'
 import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { error } from 'console';
 
 const sql = postgres(process.env.POSTGRES_URL!, {ssl: {require: true}});
 
 const FormSchema = z.object({
   id: z.string(),
-  customerId: z.string(),
-  amount: z.coerce.number(),
+  customerId: z.string({
+    invalid_type_error: 'Please select a valid customer.',
+    required_error: 'Please select a customer.',
+  }),
+  amount: z.coerce.number({
+    invalid_type_error: 'Please enter an amount.'
+  }).gt(0, {
+    message: 'Please enter an amount greater than $0.'
+  }),
   date: z.string(),
-  status: z.enum(['pending', 'paid']),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select valid invoice type.',
+    required_error: 'Please select an invoice type',
+  }),
 });
 
 const InvoiceSchema = FormSchema.omit({id: true, date: true});
 
-export async function createInvoice(formData: FormData) {
+export type State = {
+  message?: string | null;
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  },
+}
+
+export async function createInvoice(prevState: State, formData: FormData) {
   const obj = Object.fromEntries(formData.entries().filter(([_, value]) => !!value));
-  let {customerId, amount, status} = InvoiceSchema.parse(obj);
+  const validatedFields = InvoiceSchema.safeParse(obj);
+
+  if(!validatedFields.success) {
+    return {
+      message: 'Missing Fields. Failed to Create Invoice.',
+      errors: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  let {customerId, amount, status} = validatedFields.data
   amount *= 100; // convert to cents
   const date = new Date().toISOString().split('T')[0];
 
