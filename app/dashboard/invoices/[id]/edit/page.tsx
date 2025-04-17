@@ -19,7 +19,7 @@ export default async function Page(props: {
   return <main>
     <Breadcrumbs breadcrumbs={[
       { label: 'Invoices', href: '/dashboard/invoices' },
-      { label: 'Create Invoice', href: `/dashboard/invoices/${id}/edit`, active: true },
+      { label: 'Edit Invoice', href: `/dashboard/invoices/${id}/edit`, active: true },
     ]} />
     <EditInvoiceForm customers={customers} invoice={invoice} />
   </main>;
