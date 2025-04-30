@@ -1,6 +1,10 @@
 import "@/app/ui/global.css";
 import { inter } from '@/app/ui/fonts'
 import { Metadata } from "next";
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { Roboto } from "next/font/google";
+import { ThemeProvider } from "@mui/material";
+import theme from "./theme";
 
 export const metadata: Metadata = {
   title: {
@@ -11,6 +15,13 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://nextjs-dashboard-dun-two-45.vercel.app/')
 }
 
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto',
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -18,7 +29,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>{children}</body>
-    </html>
+      <body className={`${inter.className} antialiased ${roboto.variable}`}>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>
+            {children}
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
+    </html >
   );
 }
