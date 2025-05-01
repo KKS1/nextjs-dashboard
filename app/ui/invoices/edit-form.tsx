@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
 import { State, updateInvoice } from '@/app/lib/actions';
-import { useActionState } from 'react';
+import { useActionState, useTransition } from 'react';
 
 export default function EditInvoiceForm({
   invoice,
@@ -22,9 +22,18 @@ export default function EditInvoiceForm({
   const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
   const initialState: State = { message: null, errors: {} }
   const [state, formAction] = useActionState(updateInvoiceWithId, initialState)
+  const [isPending, startTransition] = useTransition()
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(() => {
+      formAction(formData);
+    });
+  }
 
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

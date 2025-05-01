@@ -9,14 +9,23 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
 import { createInvoice, State } from '@/app/lib/actions';
-import { useActionState } from 'react';
+import { useActionState, useTransition } from 'react';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   const initialState: State = { message: null, errors: {} }
+  const [isPending, startTransition] = useTransition()
   const [state, formAction] = useActionState(createInvoice, initialState)
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(() => {
+      formAction(formData);
+    });
+  }
+
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
