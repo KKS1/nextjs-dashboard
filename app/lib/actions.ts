@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
+import { MyFormSchema } from './definitions';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: { require: true } });
 
@@ -124,4 +125,23 @@ export async function authenticate(prevState: string | undefined, formData: Form
 
 export async function logout() {
   await signOut({ redirectTo: '/' })
+}
+
+export async function submitMyForm(prevState: any, formData: FormData) {
+  const obj = Object.fromEntries(formData.entries().filter(([_, value]) => !!value));
+  const validatedFields = MyFormSchema.safeParse(obj);
+
+  console.log(formData)
+
+  if (!validatedFields.success) {
+    return {
+      error: 'Missing Fields. Failed to submit form.',
+      // errors: validatedFields.error.flatten().fieldErrors,
+    }
+  }
+
+  return {
+    success: 'Form submitted successfully',
+    error: '',
+  }
 }
