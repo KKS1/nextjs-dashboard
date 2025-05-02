@@ -1,5 +1,5 @@
 'use client'
-import { CustomerField, InvoiceFormData, InvoiceSchema, State } from '@/app/lib/definitions';
+import { CustomerField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
   CheckIcon,
@@ -8,22 +8,13 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
-import { createInvoice } from '@/app/lib/actions';
+import { createInvoice, State } from '@/app/lib/actions';
 import { useActionState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   const initialState: State = { message: null, errors: {} }
-  const [, startTransition] = useTransition()
-  const [state, formAction, isPending] = useActionState(createInvoice, initialState)
-
-  const { register, formState: { errors } } = useForm<InvoiceFormData>({
-    resolver: zodResolver(InvoiceSchema),
-    mode: 'onBlur',
-    defaultValues: state.formData,
-    // errors: state.errors,
-  })
+  const [isPending, startTransition] = useTransition()
+  const [state, formAction] = useActionState(createInvoice, initialState)
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,12 +34,11 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           </label>
           <div className="relative">
             <select
-              {...register('customerId')}
               id="customer"
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue=""
               aria-describedby="customer-error"
-              defaultValue={state.formData?.customerId || ''}
             >
               <option value="" disabled>
                 Select a customer
@@ -62,10 +52,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
           </div>
           <div id="customer-error" aria-live="polite" aria-atomic="true">
-            {errors.customerId?.message && <p className="mt-2 text-sm text-red-500" key={errors.customerId.message}>
-              {`client: ${errors.customerId.message}`}
-            </p>
-            }
             {state.errors?.customerId &&
               state.errors.customerId.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>
@@ -83,7 +69,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
           <div className="relative mt-2 rounded-md">
             <div className="relative">
               <input
-                {...register('amount')}
                 id="amount"
                 name="amount"
                 type="number"
@@ -95,10 +80,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
             </div>
             <div id="amount-error" aria-live="polite" aria-atomic="true">
-              {errors.amount?.message && <p className="mt-2 text-sm text-red-500" key={errors.amount.message}>
-                {`client: ${errors.amount.message}`}
-              </p>
-              }
               {state.errors?.amount &&
                 state.errors.amount.map((error: string) => (
                   <p className="mt-2 text-sm text-red-500" key={error}>
@@ -118,7 +99,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             <div className="flex gap-4">
               <div className="flex items-center">
                 <input
-                  {...register('status')}
                   id="pending"
                   name="status"
                   type="radio"
@@ -135,7 +115,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               </div>
               <div className="flex items-center">
                 <input
-                  {...register('status')}
                   id="paid"
                   name="status"
                   type="radio"
@@ -153,10 +132,6 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
             </div>
           </div>
           <div id="status-error" aria-live="polite" aria-atomic="true">
-            {errors.status?.message && <p className="mt-2 text-sm text-red-500" key={errors.status.message}>
-              {`client: ${errors.status.message}`}
-            </p>
-            }
             {state.errors?.status &&
               state.errors.status.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>

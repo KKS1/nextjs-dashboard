@@ -5,10 +5,37 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
-import { InvoiceFormData, InvoiceSchema, State } from './definitions';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: { require: true } });
 
+const FormSchema = z.object({
+  id: z.string(),
+  customerId: z.string({
+    invalid_type_error: 'Please select a valid customer.',
+    required_error: 'Please select a customer.',
+  }),
+  amount: z.coerce.number({
+    invalid_type_error: 'Please enter an amount.'
+  }).gt(0, {
+    message: 'Please enter an amount greater than $0.'
+  }),
+  date: z.string(),
+  status: z.enum(['pending', 'paid'], {
+    invalid_type_error: 'Please select valid invoice type.',
+    required_error: 'Please select an invoice type',
+  }),
+});
+
+const InvoiceSchema = FormSchema.omit({ id: true, date: true });
+
+export type State = {
+  message?: string | null;
+  errors?: {
+    customerId?: string[];
+    amount?: string[];
+    status?: string[];
+  },
+}
 
 export async function createInvoice(prevState: State, formData: FormData) {
   const obj = Object.fromEntries(formData.entries().filter(([_, value]) => !!value));
@@ -18,7 +45,6 @@ export async function createInvoice(prevState: State, formData: FormData) {
     return {
       message: 'Missing Fields. Failed to Create Invoice.',
       errors: validatedFields.error.flatten().fieldErrors,
-      formData: obj as unknown as InvoiceFormData,
     }
   }
 
