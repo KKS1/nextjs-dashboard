@@ -145,3 +145,13 @@ export async function submitMyForm(prevState: any, formData: FormData) {
     error: '',
   }
 }
+
+export async function getGithubUser(id: string) {
+  const response = await fetch(`https://api.github.com/users/${id}`, {
+    next: {
+      revalidate: 60,
+    },
+  });
+  const data = await response.json();
+  return data;
+}

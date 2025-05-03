@@ -1,5 +1,5 @@
 'use client';
-import { useActionState, useEffect } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import Grid from '@mui/material/Grid';
 import { Controller, useForm } from 'react-hook-form';
 import { Button, TextField } from '@mui/material';
@@ -13,6 +13,7 @@ const initialState = {
 };
 
 const MyForm = () => {
+  const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(
     submitMyForm,
     initialState
@@ -37,8 +38,9 @@ const MyForm = () => {
 
   return (
     <form
+      ref={formRef}
       action={formAction}
-      onSubmit={form.handleSubmit((_, e) => e?.target.submit())}
+      onSubmit={form.handleSubmit((_, e) => formRef.current.submit())}
     >
       <Grid container spacing={6}>
         <Grid size={{ xs: 12, md: 12 }}>
