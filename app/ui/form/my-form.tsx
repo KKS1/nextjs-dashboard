@@ -40,7 +40,7 @@ const MyForm = () => {
     <form
       ref={formRef}
       action={formAction}
-      onSubmit={form.handleSubmit((_, e) => formRef.current.submit())}
+      onSubmit={form.handleSubmit((_, e) => formRef?.current?.submit())}
     >
       <Grid container spacing={6}>
         <Grid size={{ xs: 12, md: 12 }}>
