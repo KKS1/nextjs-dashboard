@@ -1,11 +1,11 @@
 'use client';
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState, useEffect, useTransition } from 'react';
 import Grid from '@mui/material/Grid';
 import { Controller, useForm } from 'react-hook-form';
 import { Button, TextField } from '@mui/material';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { submitMyForm } from '@/app/lib/actions';
-import { MyFormSchema } from '@/app/lib/definitions';
+import { MyFormSchema, MyFormValues } from '@/app/lib/definitions';
 
 const initialState = {
   success: '',
@@ -13,7 +13,7 @@ const initialState = {
 };
 
 const MyForm = () => {
-  const formRef = useRef<HTMLFormElement>(null);
+  const [, startTransition] = useTransition();
   const [state, formAction, isPending] = useActionState(
     submitMyForm,
     initialState
@@ -36,12 +36,21 @@ const MyForm = () => {
     },
   });
 
+  const onSubmit = (data: MyFormValues) => {
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    startTransition(async () => {
+      await formAction(formData);
+      form.reset();
+    });
+  };
+
   return (
-    <form
-      ref={formRef}
-      action={formAction}
-      onSubmit={form.handleSubmit((_, e) => formRef?.current?.submit())}
-    >
+    <form onSubmit={form.handleSubmit((data) => onSubmit(data))}>
       <Grid container spacing={6}>
         <Grid size={{ xs: 12, md: 12 }}>
           <Controller
