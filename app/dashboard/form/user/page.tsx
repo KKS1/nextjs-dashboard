@@ -1,4 +1,4 @@
-import { getGithubUser } from '@/app/lib/actions';
+import { getGithubUser } from '@/app/lib/data';
 import { Box } from '@mui/material';
 
 export default async function Page({

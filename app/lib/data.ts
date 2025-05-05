@@ -222,3 +222,18 @@ export async function fetchFilteredCustomers(query: string) {
     throw new Error('Failed to fetch customer table.');
   }
 }
+
+export async function getGithubUser(id: string) {
+  try {
+    const response = await fetch(`https://api.github.com/users/${id}`, {
+      next: {
+        revalidate: 60,
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching GitHub user:', error);
+    throw new Error('Failed to fetch GitHub user.');
+  }
+}
