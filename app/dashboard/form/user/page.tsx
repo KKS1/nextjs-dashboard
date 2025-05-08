@@ -1,5 +1,8 @@
 import { getGithubUser } from '@/app/lib/data';
-import { Box } from '@mui/material';
+import { BackButton } from '@/app/ui/back-button';
+import { Box, Link } from '@mui/material';
+
+import NextLink from 'next/link';
 
 export default async function Page({
   searchParams,
@@ -13,6 +16,7 @@ export default async function Page({
 
   return (
     <Box sx={{ padding: 2 }}>
+      <BackButton>Back</BackButton>
       <Box sx={{ py: 2 }}>Name: {data.name}</Box>
     </Box>
   );
