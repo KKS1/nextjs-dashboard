@@ -3,7 +3,7 @@ import { inter } from '@/app/ui/fonts'
 import { Metadata } from "next";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { Roboto } from "next/font/google";
-import { ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./theme";
 
 export const metadata: Metadata = {
@@ -32,6 +32,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased ${roboto.variable}`}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
+            <CssBaseline />
             {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
