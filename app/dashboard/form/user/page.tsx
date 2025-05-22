@@ -1,8 +1,9 @@
 import { getGithubUser } from '@/app/lib/data';
 import { BackButton } from '@/app/ui/back-button';
-import { Box, Link } from '@mui/material';
-
-import NextLink from 'next/link';
+import SearchForm from '@/app/ui/form/search-form';
+import Search from '@/app/ui/search';
+import { Box, Button, TextField } from '@mui/material';
+import Form from 'next/form';
 
 export default async function Page({
   searchParams,
@@ -18,6 +19,7 @@ export default async function Page({
     <Box sx={{ padding: 2 }}>
       <BackButton>Back</BackButton>
       <Box sx={{ py: 2 }}>Name: {data.name}</Box>
+      <SearchForm data={{ id }} />
     </Box>
   );
 }
